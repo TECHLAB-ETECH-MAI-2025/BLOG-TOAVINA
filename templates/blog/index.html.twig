@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Blog{% endblock %}
+
+{% block body %}
+    <h1 class="text-center my-4">Mon Blog</h1>
+
+    {# Formulaire d'ajout d'article ici si besoin, sinon à part dans app_article_new #}
+
+    {% for article in articles %}
+        <div class="card p-4 mb-4 shadow-sm">
+            <h2>{{ article.title }}</h2>
+            <p>{{ article.content }}</p>
+
+            <p><em>Catégories :
+                {% for category in article.categories %}
+                    {{ category.title }}{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            </em></p>
+
+            <h5>Commentaires</h5>
+            <div class="mb-3">
+                {% for comment in article.comments %}
+                    <div class="bg-light p-2 mb-2 border-start border-primary ps-3">
+                        <strong>{{ comment.author }}</strong> : {{ comment.content }}
+                    </div>
+                {% else %}
+                    <p>Aucun commentaire pour cet article.</p>
+                {% endfor %}
+            </div>
+
+            {# Formulaire d'ajout de commentaire (à condition de le générer dans le contrôleur) #}
+            {# Exemple : commentForms[article.id] #}
+            <h6>Ajouter un commentaire</h6>
+            {{ form_start(commentForms[article.id]) }}
+                {{ form_row(commentForms[article.id].author) }}
+                {{ form_row(commentForms[article.id].content) }}
+                <button class="btn btn-primary">Commenter</button>
+            {{ form_end(commentForms[article.id]) }}
+        </div>
+    {% else %}
+        <p>Aucun article trouvé.</p>
+    {% endfor %}
+{% endblock %}
