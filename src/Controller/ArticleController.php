@@ -12,6 +12,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Knp\Component\Pager\PaginatorInterface;
+
+
+
 
 #[Route('/article')]
 final class ArticleController extends AbstractController
@@ -25,9 +29,21 @@ final class ArticleController extends AbstractController
     }
 
     #[Route('/blog', name: 'app_blog_home')]
-    public function blog(ArticleRepository $articleRepository, Request $request, EntityManagerInterface $em): Response
-    {
-        $articles = $articleRepository->findAll();
+    public function blog(
+        ArticleRepository $articleRepository,
+        Request $request,
+        EntityManagerInterface $em,
+        PaginatorInterface $paginator
+    ): Response {
+        $query = $articleRepository->createQueryBuilder('a')
+            ->orderBy('a.createdAt', 'DESC')
+            ->getQuery();
+
+        $articles = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            5
+        );
 
         $commentForms = [];
 
@@ -52,6 +68,7 @@ final class ArticleController extends AbstractController
             'commentForms' => $commentForms,
         ]);
     }
+
 
 
 

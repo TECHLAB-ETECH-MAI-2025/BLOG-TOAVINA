@@ -41,4 +41,9 @@
     {% else %}
         <p>Aucun article trouvé.</p>
     {% endfor %}
+    <div class="pagination">
+    {{ knp_pagination_render(articles, '@KnpPaginator/Pagination/bootstrap_v5_pagination.html.twig') }}
+    </div>
+
+
 {% endblock %}
