@@ -70,8 +70,6 @@ final class ArticleController extends AbstractController
     }
 
 
-
-
     #[Route('/new', name: 'app_article_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -95,8 +93,12 @@ final class ArticleController extends AbstractController
     #[Route('/{id}', name: 'app_article_show', methods: ['GET'])]
     public function show(Article $article): Response
     {
+        $commentForm = [];
+        $comment = new Comment();
+        $form = $this->createForm(CommentFormType::class, $comment);
         return $this->render('article/show.html.twig', [
             'article' => $article,
+            'commentForm' => $commentForm = $form->createView(),
         ]);
     }
 
