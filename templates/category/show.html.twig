@@ -1,34 +1,328 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Category{% endblock %}
+{% block title %}{{ category.title }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1877f2;
+            --light-bg: #f0f2f5;
+            --border-color: #dddfe2;
+            --text-dark: #1c1e21;
+            --text-light: #65676b;
+            --card-bg: #ffffff;
+            --shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text-dark);
+        }
+        
+        .header {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .back-btn {
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .back-btn:hover {
+            background-color: var(--border-color);
+            color: var(--text-dark);
+        }
+        
+        .main-container {
+            max-width: 680px;
+            margin: 20px auto;
+            padding: 0 16px;
+        }
+        
+        .category-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .category-header {
+            padding: 24px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .category-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            margin: 0 auto 16px;
+        }
+        
+        .category-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+        
+        .category-description {
+            color: var(--text-light);
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .category-date {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+        
+        .category-details {
+            padding: 24px;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--light-bg);
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .detail-value {
+            color: var(--text-light);
+            text-align: right;
+        }
+        
+        .category-actions {
+            border-top: 1px solid var(--border-color);
+            display: flex;
+        }
+        
+        .action-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 16px;
+            color: var(--text-light);
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        
+        .action-btn:hover {
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+        }
+        
+        .action-btn.btn-edit:hover {
+            background-color: rgba(243, 156, 18, 0.1);
+            color: var(--warning-color);
+        }
+        
+        .action-btn.btn-delete:hover {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--danger-color);
+        }
+        
+        .action-btn i {
+            font-size: 18px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 10px auto;
+                padding: 0 8px;
+            }
+            
+            .category-card {
+                border-radius: 0;
+                margin-bottom: 10px;
+            }
+            
+            .category-header,
+            .category-details {
+                padding: 20px;
+            }
+            
+            .detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+            
+            .detail-value {
+                text-align: left;
+            }
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
-    <h1>Category</h1>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <a href="{{ path('app_article_index') }}" class="logo">Blog</a>
+                </div>
+                <div class="col-6 text-end">
+                    <a href="{{ path('app_category_index') }}" class="back-btn">
+                        <i class="bi bi-arrow-left"></i>
+                        Retour
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ category.id }}</td>
-            </tr>
-            <tr>
-                <th>Title</th>
-                <td>{{ category.title }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ category.description }}</td>
-            </tr>
-            <tr>
-                <th>CreatedAt</th>
-                <td>{{ category.createdAt ? category.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="category-card">
+            <!-- Category Header -->
+            <div class="category-header">
+                <div class="category-icon">
+                    <i class="bi bi-folder"></i>
+                </div>
+                <h1 class="category-title">{{ category.title }}</h1>
+                {% if category.description %}
+                    <p class="category-description">{{ category.description }}</p>
+                {% endif %}
+                <div class="category-date">
+                    Créée le {{ category.createdAt ? category.createdAt|date('d M Y à H:i') : 'Date inconnue' }}
+                </div>
+            </div>
+            
+            <!-- Category Details -->
+            <div class="category-details">
+                <div class="detail-row">
+                    <div class="detail-label">
+                        <i class="bi bi-hash"></i>
+                        ID
+                    </div>
+                    <div class="detail-value">{{ category.id }}</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">
+                        <i class="bi bi-tag"></i>
+                        Titre
+                    </div>
+                    <div class="detail-value">{{ category.title }}</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">
+                        <i class="bi bi-text-paragraph"></i>
+                        Description
+                    </div>
+                    <div class="detail-value">{{ category.description|default('Aucune description') }}</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">
+                        <i class="bi bi-calendar"></i>
+                        Date de création
+                    </div>
+                    <div class="detail-value">
+                        {{ category.createdAt ? category.createdAt|date('d M Y à H:i:s') : 'Date inconnue' }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Category Actions -->
+            <div class="category-actions">
+                <a href="{{ path('app_category_edit', {'id': category.id}) }}" class="action-btn btn-edit">
+                    <i class="bi bi-pencil"></i>
+                    Modifier
+                </a>
+                <button type="button" class="action-btn btn-delete" onclick="confirmDelete()">
+                    <i class="bi bi-trash"></i>
+                    Supprimer
+                </button>
+            </div>
+        </div>
+    </div>
 
-    <a href="{{ path('app_category_index') }}">back to list</a>
+    <!-- Hidden Delete Form -->
+    <div style="display: none;">
+        {{ include('category/_delete_form.html.twig') }}
+    </div>
+{% endblock %}
 
-    <a href="{{ path('app_category_edit', {'id': category.id}) }}">edit</a>
-
-    {{ include('category/_delete_form.html.twig') }}
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animation d'apparition
+            const card = document.querySelector('.category-card');
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+        });
+        
+        function confirmDelete() {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?')) {
+                document.querySelector('form[action*="delete"]').submit();
+            }
+        }
+    </script>
 {% endblock %}

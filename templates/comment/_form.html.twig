@@ -1,4 +1,32 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+    <div class="form-group">
+        {{ form_label(form.author, 'Nom de l\'auteur', {'attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.author, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le nom de l\'auteur'}}) }}
+        {{ form_errors(form.author) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.content, 'Contenu du commentaire', {'attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.content, {'attr': {'class': 'form-control', 'placeholder': 'Écrivez votre commentaire ici...', 'rows': 4}}) }}
+        {{ form_errors(form.content) }}
+    </div>
+
+    {% if form.article is defined %}
+    <div class="form-group">
+        {{ form_label(form.article, 'Article associé', {'attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.article, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.article) }}
+    </div>
+    {% endif %}
+
+    <div class="form-actions">
+        <a href="{{ path('app_comment_index') }}" class="btn btn-secondary">
+            <i class="bi bi-x-circle"></i>
+            Annuler
+        </a>
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-circle"></i>
+            {{ button_label|default('Enregistrer') }}
+        </button>
+    </div>
 {{ form_end(form) }}

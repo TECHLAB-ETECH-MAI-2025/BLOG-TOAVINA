@@ -1,0 +1,67 @@
+{# templates/pagination.html.twig #}
+{% if pageCount > 1 %}
+<div class="pagination-wrapper">
+    <ul class="pagination">
+        {# Bouton Première page #}
+        {% if first is defined and current != first %}
+            <li class="page-item">
+                <a class="page-link prev-link" href="{{ path(route, query|merge({(pageParameterName): first})) }}" title="Première page">
+                    <i class="bi bi-chevron-double-left"></i>
+                </a>
+            </li>
+        {% endif %}
+        
+        {# Bouton Précédent #}
+        {% if previous is defined %}
+            <li class="page-item">
+                <a class="page-link prev-link" href="{{ path(route, query|merge({(pageParameterName): previous})) }}" title="Page précédente">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link prev-link">
+                    <i class="bi bi-chevron-left"></i>
+                </span>
+            </li>
+        {% endif %}
+
+        {# Pages numérotées #}
+        {% for page in pagesInRange %}
+            {% if page != current %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ path(route, query|merge({(pageParameterName): page})) }}">{{ page }}</a>
+                </li>
+            {% else %}
+                <li class="page-item active">
+                    <span class="page-link">{{ page }}</span>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        {# Bouton Suivant #}
+        {% if next is defined %}
+            <li class="page-item">
+                <a class="page-link next-link" href="{{ path(route, query|merge({(pageParameterName): next})) }}" title="Page suivante">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link next-link">
+                    <i class="bi bi-chevron-right"></i>
+                </span>
+            </li>
+        {% endif %}
+        
+        {# Bouton Dernière page #}
+        {% if last is defined and current != last %}
+            <li class="page-item">
+                <a class="page-link next-link" href="{{ path(route, query|merge({(pageParameterName): last})) }}" title="Dernière page">
+                    <i class="bi bi-chevron-double-right"></i>
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</div>
+{% endif %}

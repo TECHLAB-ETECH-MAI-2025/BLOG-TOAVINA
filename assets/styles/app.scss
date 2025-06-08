@@ -1,0 +1,65 @@
+	// Styles personnalisés
+	.like-button {
+		cursor: pointer;
+		transition: all 0.3s ease;
+
+		&:hover {
+			transform: scale(1.1);
+		}
+
+		&.liked {
+			color: #e74c3c;
+		}
+	}
+
+	.comment-form {
+		margin-bottom: 2rem;
+	}
+
+	.loading-spinner {
+		display: inline-block;
+		width: 1rem;
+		height: 1rem;
+		border: 0.2em solid currentColor;
+		border-right-color: transparent;
+		border-radius: 50%;
+		animation: spinner-border .75s linear infinite;
+	}
+
+	.search-container {
+		position: relative;
+		margin-bottom: 2rem;
+
+		.search-results {
+			position: absolute;
+			top: 100%;
+			left: 0;
+			right: 0;
+			background: white;
+			border: 1px solid #ddd;
+			border-radius: 0 0 0.25rem 0.25rem;
+			box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+			z-index: 1000;
+			max-height: 300px;
+			overflow-y: auto;
+			display: none;
+
+			&.show {
+				display: block;
+			}
+
+			.search-item {
+				padding: 0.75rem 1rem;
+				border-bottom: 1px solid #eee;
+				cursor: pointer;
+
+				&:hover {
+					background-color: #f8f9fa;
+				}
+
+				&:last-child {
+					border-bottom: none;
+				}
+			}
+		}
+	}

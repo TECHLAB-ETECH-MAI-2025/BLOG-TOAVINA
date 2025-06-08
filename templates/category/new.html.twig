@@ -1,11 +1,275 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Category{% endblock %}
+{% block title %}Nouvelle Catégorie{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1877f2;
+            --light-bg: #f0f2f5;
+            --border-color: #dddfe2;
+            --text-dark: #1c1e21;
+            --text-light: #65676b;
+            --card-bg: #ffffff;
+            --shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text-dark);
+        }
+        
+        .header {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .back-btn {
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .back-btn:hover {
+            background-color: var(--border-color);
+            color: var(--text-dark);
+        }
+        
+        .main-container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 0 16px;
+        }
+        
+        .form-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        
+        .form-header {
+            padding: 24px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .form-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin: 0 auto 16px;
+        }
+        
+        .form-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+        
+        .form-subtitle {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+        
+        .form-body {
+            padding: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.2s;
+            background-color: var(--card-bg);
+            color: var(--text-dark);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.1);
+        }
+        
+        .form-control::placeholder {
+            color: var(--text-light);
+        }
+        
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .form-actions {
+            border-top: 1px solid var(--border-color);
+            padding: 20px 24px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #166fe5;
+        }
+        
+        .btn-secondary {
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--border-color);
+            color: var(--text-dark);
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 10px auto;
+                padding: 0 8px;
+            }
+            
+            .form-card {
+                border-radius: 0;
+            }
+            
+            .form-header,
+            .form-body,
+            .form-actions {
+                padding: 20px;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
-    <h1>Create new Category</h1>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <a href="{{ path('app_article_index') }}" class="logo">Blog</a>
+                </div>
+                <div class="col-6 text-end">
+                    <a href="{{ path('app_category_index') }}" class="back-btn">
+                        <i class="bi bi-arrow-left"></i>
+                        Retour
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
 
-    {{ include('category/_form.html.twig') }}
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="form-card">
+            <!-- Form Header -->
+            <div class="form-header">
+                <div class="form-icon">
+                    <i class="bi bi-folder-plus"></i>
+                </div>
+                <h1 class="form-title">Nouvelle Catégorie</h1>
+                <p class="form-subtitle">Créez une nouvelle catégorie pour organiser vos articles</p>
+            </div>
+            
+            <!-- Form Body -->
+            <div class="form-body">
+                {{ include('category/_form.html.twig') }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
 
-    <a href="{{ path('app_category_index') }}">back to list</a>
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animation d'apparition
+            const card = document.querySelector('.form-card');
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+            
+            // Auto-resize du textarea
+            const textarea = document.querySelector('textarea');
+            if (textarea) {
+                textarea.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = this.scrollHeight + 'px';
+                });
+            }
+        });
+    </script>
 {% endblock %}

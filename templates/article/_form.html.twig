@@ -1,4 +1,39 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+{{ form_start(form, {'attr': {'class': 'modern-form', 'id': 'article_form'}}) }}
+    <div class="form-fields">
+        <div class="form-group">
+            {{ form_label(form.title, 'Titre', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.title, {'attr': {
+                'class': 'form-control',
+                'placeholder': 'Titre de votre article'
+            }}) }}
+            {{ form_errors(form.title, {'attr': {'class': 'form-error'}}) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.content, 'Contenu', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.content, {'attr': {
+                'class': 'form-control',
+                'placeholder': 'Contenu de votre article...',
+                'rows': 8
+            }}) }}
+            {{ form_errors(form.content, {'attr': {'class': 'form-error'}}) }}
+        </div>
+
+        {% if form.categories is defined %}
+        <div class="form-group">
+            {{ form_label(form.categories, 'Catégories', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.categories, {'attr': {'class': 'form-select'}}) }}
+            {{ form_errors(form.categories, {'attr': {'class': 'form-error'}}) }}
+        </div>
+        {% endif %}
+
+        {{ form_rest(form) }}
+    </div>
+
+    <div class="form-submit">
+        <button type="submit" class="btn-primary">
+            <i class="bi bi-check-lg"></i>
+            {{ button_label|default('Enregistrer') }}
+        </button>
+    </div>
 {{ form_end(form) }}

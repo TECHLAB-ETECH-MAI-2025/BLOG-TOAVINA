@@ -2,48 +2,725 @@
 
 {% block title %}Mon Blog{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1877f2;
+            --like-color: #e91e63;
+            --light-bg: #f0f2f5;
+            --border-color: #dddfe2;
+            --text-dark: #1c1e21;
+            --text-light: #65676b;
+            --card-bg: #ffffff;
+            --shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text-dark);
+        }
+        
+        .header {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .create-btn-header {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .create-btn-header:hover {
+            background-color: #166fe5;
+            color: white;
+        }
+        
+        .main-container {
+            max-width: 680px;
+            margin: 20px auto;
+            padding: 0 16px;
+        }
+        
+        .post-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: box-shadow 0.2s ease;
+        }
+        
+        .post-card:hover {
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .post-header {
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .post-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+        
+        .post-meta {
+            flex: 1;
+        }
+        
+        .post-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+            line-height: 1.2;
+        }
+        
+        .post-date {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        .post-menu {
+            color: var(--text-light);
+            background: none;
+            border: none;
+            font-size: 20px;
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .post-menu:hover {
+            background-color: var(--light-bg);
+        }
+        
+        .post-content {
+            padding: 0 16px;
+            font-size: 15px;
+            line-height: 1.33;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+        }
+        
+        .post-categories {
+            padding: 0 16px;
+            margin-bottom: 12px;
+        }
+        
+        .category-tag {
+            display: inline-block;
+            background-color: var(--light-bg);
+            color: var(--text-light);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-right: 6px;
+            margin-bottom: 4px;
+        }
+        
+        /* Likes Section */
+        .likes-section {
+            padding: 0 16px 12px;
+        }
+        
+        .likes-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-light);
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+        
+        .likes-count {
+            font-weight: 600;
+        }
+        
+        .like-icon-small {
+            width: 18px;
+            height: 18px;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+        }
+        
+        /* Post Actions avec Like */
+        .post-actions {
+            border-top: 1px solid var(--border-color);
+            display: flex;
+        }
+        
+        .action-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 12px;
+            color: var(--text-light);
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            text-decoration: none;
+            position: relative;
+        }
+        
+        .action-btn:hover {
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+        }
+        
+        .action-btn i {
+            font-size: 18px;
+        }
+        
+        /* Like Button Styles */
+        .like-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .like-btn:hover {
+            background-color: rgba(233, 30, 99, 0.1);
+            color: var(--like-color);
+        }
+        
+        .like-btn.liked {
+            color: var(--like-color);
+            animation: likeAnimation 0.3s ease;
+        }
+        
+        .like-btn.liked:hover {
+            background-color: rgba(233, 30, 99, 0.1);
+        }
+        
+        @keyframes likeAnimation {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .like-btn .like-icon {
+            transition: all 0.2s ease;
+        }
+        
+        .like-btn.liked .like-icon {
+            color: var(--like-color);
+            transform: scale(1.1);
+        }
+        
+        /* Loading state */
+        .like-btn.loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        .comments-section {
+            border-top: 1px solid var(--border-color);
+            padding: 16px;
+        }
+        
+        .comments-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-dark);
+        }
+        
+        .comment-item {
+            background-color: var(--light-bg);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        .comment-author {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        
+        .comment-content {
+            color: var(--text-dark);
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .no-comments {
+            color: var(--text-light);
+            font-style: italic;
+            font-size: 14px;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .comment-form {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .comment-form-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-dark);
+        }
+        
+        .form-control {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
+        }
+        
+        .btn-comment {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+        
+        .btn-comment:hover {
+            background-color: #166fe5;
+        }
+        
+        /* Pagination */
+        .pagination-container {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .empty-icon {
+            font-size: 48px;
+            color: var(--text-light);
+            margin-bottom: 16px;
+        }
+        
+        .empty-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .empty-text {
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+        
+        .create-first-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 24px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .create-first-btn:hover {
+            background-color: #166fe5;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 10px auto;
+                padding: 0 8px;
+            }
+            
+            .post-card,
+            .pagination-container {
+                border-radius: 0;
+                margin-bottom: 10px;
+            }
+            
+            .post-header {
+                padding: 12px;
+            }
+            
+            .post-content,
+            .post-categories,
+            .likes-section {
+                padding: 0 12px;
+            }
+            
+            .comments-section {
+                padding: 12px;
+            }
+            
+            .action-btn {
+                font-size: 14px;
+                padding: 10px;
+            }
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
-    <h1 class="text-center my-4">Mon Blog</h1>
-
-    {# Formulaire d'ajout d'article ici si besoin, sinon à part dans app_article_new #}
-
-    {% for article in articles %}
-        <div class="card p-4 mb-4 shadow-sm">
-            <h2>{{ article.title }}</h2>
-            <p>{{ article.content }}</p>
-
-            <p><em>Catégories :
-                {% for category in article.categories %}
-                    {{ category.title }}{% if not loop.last %}, {% endif %}
-                {% endfor %}
-            </em></p>
-
-            <h5>Commentaires</h5>
-            <div class="mb-3">
-                {% for comment in article.comments %}
-                    <div class="bg-light p-2 mb-2 border-start border-primary ps-3">
-                        <strong>{{ comment.author }}</strong> : {{ comment.content }}
-                    </div>
-                {% else %}
-                    <p>Aucun commentaire pour cet article.</p>
-                {% endfor %}
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <a href="{{ path('app_blog_home') }}" class="logo">Blog</a>
+                </div>
+                <div class="col-6 text-end">
+                    <a href="{{ path('app_article_new') }}" class="create-btn-header">
+                        <i class="bi bi-plus"></i>
+                        Créer
+                    </a>
+                </div>
             </div>
-
-            {# Formulaire d'ajout de commentaire (à condition de le générer dans le contrôleur) #}
-            {# Exemple : commentForms[article.id] #}
-            <h6>Ajouter un commentaire</h6>
-            {{ form_start(commentForms[article.id]) }}
-                {{ form_row(commentForms[article.id].author) }}
-                {{ form_row(commentForms[article.id].content) }}
-                <button class="btn btn-primary">Commenter</button>
-            {{ form_end(commentForms[article.id]) }}
         </div>
-    {% else %}
-        <p>Aucun article trouvé.</p>
-    {% endfor %}
-    <div class="pagination">
-    {{ knp_pagination_render(articles, '@KnpPaginator/Pagination/bootstrap_v5_pagination.html.twig') }}
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        {% if articles|length > 0 %}
+            {% for article in articles %}
+                {% set userLiked = false %}
+                {% set userIp = app.request.clientIp %}
+                {% for like in article.likes %}
+                    {% if like.ipAddress == userIp %}
+                        {% set userLiked = true %}
+                    {% endif %}
+                {% endfor %}
+                
+                <div class="post-card">
+                    <!-- Post Header -->
+                    <div class="post-header">
+                        <div class="post-info">
+                            <div class="post-avatar">
+                                {{ article.id }}
+                            </div>
+                            <div class="post-meta">
+                                <div class="post-title">{{ article.title }}</div>
+                                <div class="post-date">
+                                    {{ article.createdAt ? article.createdAt|date('d M Y à H:i') : 'Date inconnue' }}
+                                </div>
+                            </div>
+                        </div>
+                        <button class="post-menu">
+                            <i class="bi bi-three-dots"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Post Content -->
+                    <div class="post-content">
+                        {{ article.content }}
+                    </div>
+                    
+                    <!-- Categories -->
+                    {% if article.categories|length > 0 %}
+                        <div class="post-categories">
+                            {% for category in article.categories %}
+                                <span class="category-tag">{{ category.title }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Likes Info -->
+                    {% if article.likes|length > 0 %}
+                        <div class="likes-section">
+                            <div class="likes-info">
+                                <div class="like-icon-small">
+                                    <i class="bi bi-heart-fill"></i>
+                                </div>
+                                <span class="likes-count">{{ article.likes|length }}</span>
+                                <span>{{ article.likes|length > 1 ? 'personnes aiment ceci' : 'personne aime ceci' }}</span>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Post Actions -->
+                    <div class="post-actions">
+                        <form method="post" action="{{ path('article_like', {'id': article.id}) }}" class="like-form" style="flex: 1; margin: 0;">
+                            <button type="submit" class="action-btn like-btn {{ userLiked ? 'liked' : '' }}" data-article-id="{{ article.id }}">
+                                <i class="bi {{ userLiked ? 'bi-heart-fill' : 'bi-heart' }} like-icon"></i>
+                                <span class="like-text">{{ userLiked ? 'Aimé' : 'J\'aime' }}</span>
+                            </button>
+                        </form>
+                        <a href="{{ path('app_article_show', {'id': article.id}) }}" class="action-btn">
+                            <i class="bi bi-chat-dots"></i>
+                            Commenter
+                        </a>
+                        <a href="{{ path('app_article_show', {'id': article.id}) }}" class="action-btn">
+                            <i class="bi bi-eye"></i>
+                            Voir
+                        </a>
+                        <a href="{{ path('app_article_edit', {'id': article.id}) }}" class="action-btn">
+                            <i class="bi bi-pencil"></i>
+                            Modifier
+                        </a>
+                    </div>
+                    
+                    <!-- Comments Section -->
+                    <div class="comments-section">
+                        <div class="comments-title">
+                            <i class="bi bi-chat-dots me-2"></i>
+                            Commentaires ({{ article.comments|length }})
+                        </div>
+                        
+                        {% if article.comments|length > 0 %}
+                            {% for comment in article.comments %}
+                                <div class="comment-item">
+                                    <div class="comment-author">{{ comment.author }}</div>
+                                    <div class="comment-content">{{ comment.content }}</div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="no-comments">
+                                <i class="bi bi-chat-square-text"></i>
+                                <br>Aucun commentaire pour cet article.
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Comment Form -->
+                        <div class="comment-form">
+                            <div class="comment-form-title">
+                                <i class="bi bi-plus-circle me-1"></i>
+                                Ajouter un commentaire
+                            </div>
+                            {{ form_start(commentForms[article.id]) }}
+                                <div class="mb-2">
+                                    {{ form_widget(commentForms[article.id].author, {'attr': {'class': 'form-control', 'placeholder': 'Votre nom'}}) }}
+                                </div>
+                                <div class="mb-2">
+                                    {{ form_widget(commentForms[article.id].content, {'attr': {'class': 'form-control', 'placeholder': 'Votre commentaire...', 'rows': 3}}) }}
+                                </div>
+                                <button type="submit" class="btn-comment">
+                                    <i class="bi bi-send me-1"></i>
+                                    Commenter
+                                </button>
+                            {{ form_end(commentForms[article.id]) }}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <!-- Pagination -->
+            <div class="pagination-container">
+                {{ knp_pagination_render(articles, '@KnpPaginator/Pagination/bootstrap_v5_pagination.html.twig') }}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="bi bi-journal-text empty-icon"></i>
+                <h3 class="empty-title">Aucun article</h3>
+                <p class="empty-text">Commencez par créer votre premier article</p>
+                <a href="{{ path('app_article_new') }}" class="create-first-btn">Créer un article</a>
+            </div>
+        {% endif %}
     </div>
+{% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animation des cartes au scroll
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }, index * 100);
+                    }
+                });
+            });
 
+            document.querySelectorAll('.post-card').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(card);
+            });
+            
+            // Gestion des likes avec animation
+            document.querySelectorAll('.like-form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const likeBtn = this.querySelector('.like-btn');
+                    const likeIcon = likeBtn.querySelector('.like-icon');
+                    const likeText = likeBtn.querySelector('.like-text');
+                    const articleId = likeBtn.dataset.articleId;
+                    
+                    // Animation de loading
+                    likeBtn.classList.add('loading');
+                    
+                    // Envoi de la requête
+                    fetch(this.action, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        }
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            // Toggle de l'état du like
+                            const isLiked = likeBtn.classList.contains('liked');
+                            
+                            if (isLiked) {
+                                // Retirer le like
+                                likeBtn.classList.remove('liked');
+                                likeIcon.className = 'bi bi-heart like-icon';
+                                likeText.textContent = 'J\'aime';
+                            } else {
+                                // Ajouter le like
+                                likeBtn.classList.add('liked');
+                                likeIcon.className = 'bi bi-heart-fill like-icon';
+                                likeText.textContent = 'Aimé';
+                                
+                                // Animation de like
+                                likeBtn.style.animation = 'likeAnimation 0.3s ease';
+                                setTimeout(() => {
+                                    likeBtn.style.animation = '';
+                                }, 300);
+                            }
+                            
+                            // Mettre à jour le compteur de likes
+                            const likesSection = this.closest('.post-card').querySelector('.likes-section');
+                            const likesCount = likesSection ? likesSection.querySelector('.likes-count') : null;
+                            
+                            if (likesCount) {
+                                const currentCount = parseInt(likesCount.textContent);
+                                const newCount = isLiked ? currentCount - 1 : currentCount + 1;
+                                likesCount.textContent = newCount;
+                                
+                                // Masquer la section si plus de likes
+                                if (newCount === 0) {
+                                    likesSection.style.display = 'none';
+                                }
+                            } else if (!isLiked) {
+                                // Créer la section likes si elle n'existe pas
+                                const likesHtml = `
+                                    <div class="likes-section">
+                                        <div class="likes-info">
+                                            <div class="like-icon-small">
+                                                <i class="bi bi-heart-fill"></i>
+                                            </div>
+                                            <span class="likes-count">1</span>
+                                            <span>personne aime ceci</span>
+                                        </div>
+                                    </div>
+                                `;
+                                const categoriesSection = this.closest('.post-card').querySelector('.post-categories');
+                                const postContent = this.closest('.post-card').querySelector('.post-content');
+                                
+                                if (categoriesSection) {
+                                    categoriesSection.insertAdjacentHTML('afterend', likesHtml);
+                                } else {
+                                    postContent.insertAdjacentHTML('afterend', likesHtml);
+                                }
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors du like:', error);
+                    })
+                    .finally(() => {
+                        likeBtn.classList.remove('loading');
+                    });
+                });
+            });
+            
+            // Menu dropdown
+            document.querySelectorAll('.post-menu').forEach(menu => {
+                menu.addEventListener('click', function() {
+                    console.log('Menu clicked for article');
+                });
+            });
+            
+            // Auto-resize des textareas
+            document.querySelectorAll('textarea').forEach(textarea => {
+                textarea.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = this.scrollHeight + 'px';
+                });
+            });
+        });
+    </script>
 {% endblock %}

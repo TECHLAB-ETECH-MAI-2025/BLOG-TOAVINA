@@ -1,39 +1,574 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Comment index{% endblock %}
+{% block title %}Gestion des Commentaires{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1877f2;
+            --light-bg: #f0f2f5;
+            --border-color: #dddfe2;
+            --text-dark: #1c1e21;
+            --text-light: #65676b;
+            --card-bg: #ffffff;
+            --shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            --success-color: #42b883;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text-dark);
+        }
+        
+        .header {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .create-btn-header {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .create-btn-header:hover {
+            background-color: #166fe5;
+            color: white;
+        }
+        
+        .main-container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 0 16px;
+        }
+        
+        .page-header {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+        
+        .page-subtitle {
+            color: var(--text-light);
+            font-size: 16px;
+        }
+        
+        .stats-bar {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .stats-item {
+            text-align: center;
+        }
+        
+        .stats-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            display: block;
+        }
+        
+        .stats-label {
+            font-size: 12px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .comment-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
+            overflow: hidden;
+            transition: box-shadow 0.2s ease;
+        }
+        
+        .comment-card:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .comment-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .comment-author {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .comment-date {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        .comment-content {
+            padding: 16px 20px;
+            color: var(--text-dark);
+            font-size: 15px;
+            line-height: 1.5;
+        }
+        
+        .comment-footer {
+            padding: 12px 20px;
+            background-color: var(--light-bg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .comment-article {
+            font-size: 13px;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .comment-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-view {
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+        }
+        
+        .btn-view:hover {
+            background-color: var(--border-color);
+            color: var(--text-dark);
+        }
+        
+        .btn-edit {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        .btn-edit:hover {
+            background-color: #e67e22;
+            color: white;
+        }
+        
+        .empty-state {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 60px 20px;
+            text-align: center;
+        }
+        
+        .empty-icon {
+            font-size: 64px;
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+        
+        .empty-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-dark);
+        }
+        
+        .empty-text {
+            color: var(--text-light);
+            margin-bottom: 24px;
+            font-size: 16px;
+        }
+        
+        .create-first-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+        }
+        
+        .create-first-btn:hover {
+            background-color: #166fe5;
+            color: white;
+        }
+
+        .article-navigation {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 16px 20px;
+            margin-bottom: 20px;
+        }
+
+        .nav-header {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background-color 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--border-color);
+        }
+
+        .nav-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .nav-icon {
+            font-size: 16px;
+        }
+
+        /* Pagination Styles */
+        .pagination-container {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .pagination-info {
+            text-align: center;
+            margin-bottom: 16px;
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .pagination-wrapper {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Style pour la pagination Bootstrap */
+        .pagination {
+            margin: 0;
+        }
+
+        .pagination .page-link {
+            color: var(--text-dark);
+            background-color: var(--light-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin: 0 2px;
+            padding: 8px 12px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .pagination .page-link:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .pagination .page-item.disabled .page-link {
+            background-color: transparent;
+            color: var(--text-light);
+            border-color: transparent;
+            opacity: 0.5;
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 10px auto;
+                padding: 0 8px;
+            }
+            
+            .comment-card,
+            .page-header,
+            .stats-bar {
+                border-radius: 0;
+                margin-bottom: 10px;
+            }
+            
+            .comment-header,
+            .comment-content,
+            .comment-footer {
+                padding: 12px 16px;
+            }
+            
+            .comment-actions {
+                flex-direction: column;
+                gap: 6px;
+            }
+            
+            .action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
-    <h1>Comment index</h1>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <a href="{{ path('app_article_index') }}" class="logo">Blog</a>
+                </div>
+                <div class="col-6 text-end">
+                    <a href="{{ path('app_comment_new') }}" class="create-btn-header">
+                        <i class="bi bi-plus"></i>
+                        Nouveau Commentaire
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Author</th>
-                <th>Content</th>
-                <th>CreatedAt</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for comment in comments %}
-            <tr>
-                <td>{{ comment.id }}</td>
-                <td>{{ comment.author }}</td>
-                <td>{{ comment.content }}</td>
-                <td>{{ comment.createdAt ? comment.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>
-                    <a href="{{ path('app_comment_show', {'id': comment.id}) }}">show</a>
-                    <a href="{{ path('app_comment_edit', {'id': comment.id}) }}">edit</a>
-                </td>
-            </tr>
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Gestion des Commentaires</h1>
+            <p class="page-subtitle">Modérez les commentaires de votre blog</p>
+        </div>
+
+        <div class="d-flex justify-content-between stats-bar">
+    <div class="stats-item me-3">
+        <span class="stats-number">{{ comments.getTotalItemCount }}</span>
+        <span class="stats-label">COMMENTAIRES</span>
+    </div>
+    <div class="stats-item">
+        <span class="stats-number">{{ comments.getCurrentPageNumber }}</span>
+        <span class="stats-label">PAGE</span>
+    </div>
+    <div class="stats-item ms-3">
+        <span class="stats-number">{{ comments.getPageCount }}</span>
+        <span class="stats-label">PAGES</span>
+    </div>
+</div>
+
+
+        <!-- Navigation Articles -->
+        {% if comments.getPageCount > 1 %}
+        <div class="article-navigation">
+            <div class="nav-header">
+                <i class="bi bi-arrow-left-right"></i>
+                Navigation
+            </div>
+            <div class="nav-buttons">
+                {% if comments.getCurrentPageNumber > 1 %}
+                    <a href="{{ path('app_comment_index', {'page': comments.getCurrentPageNumber - 1}) }}" class="nav-btn">
+                        <i class="bi bi-chevron-left nav-icon"></i>
+                        Page précédente
+                    </a>
+                {% else %}
+                    <div class="nav-btn disabled">
+                        <i class="bi bi-chevron-left nav-icon"></i>
+                        Page précédente
+                    </div>
+                {% endif %}
+                
+                {% if comments.getCurrentPageNumber < comments.getPageCount %}
+                    <a href="{{ path('app_comment_index', {'page': comments.getCurrentPageNumber + 1}) }}" class="nav-btn">
+                        Page suivante
+                        <i class="bi bi-chevron-right nav-icon"></i>
+                    </a>
+                {% else %}
+                    <div class="nav-btn disabled">
+                        Page suivante
+                        <i class="bi bi-chevron-right nav-icon"></i>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Comments List -->
+        {% if comments|length > 0 %}
+            {% for comment in comments %}
+                <div class="comment-card">
+                    <div class="comment-header">
+                        <div class="comment-author">
+                            <i class="bi bi-person-circle"></i>
+                            {{ comment.author }}
+                        </div>
+                        <div class="comment-date">
+                            {{ comment.createdAt ? comment.createdAt|date('d M Y à H:i') : 'Date inconnue' }}
+                        </div>
+                    </div>
+                    
+                    <div class="comment-content">
+                        {{ comment.content|nl2br }}
+                    </div>
+                    
+                    <div class="comment-footer">
+                        <div class="comment-article">
+                            <i class="bi bi-file-text"></i>
+                            Article: {{ comment.article ? comment.article.title : 'Non associé' }}
+                        </div>
+                        <div class="comment-actions">
+                            <a href="{{ path('app_comment_show', {'id': comment.id}) }}" class="action-btn btn-view">
+                                <i class="bi bi-eye"></i>
+                                Voir
+                            </a>
+                            <a href="{{ path('app_comment_edit', {'id': comment.id}) }}" class="action-btn btn-edit">
+                                <i class="bi bi-pencil"></i>
+                                Modifier
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         {% else %}
-            <tr>
-                <td colspan="5">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            <div class="empty-state">
+                <i class="bi bi-chat-square-text empty-icon"></i>
+                <h3 class="empty-title">Aucun commentaire</h3>
+                <p class="empty-text">Il n'y a pas encore de commentaires sur votre blog</p>
+                <a href="{{ path('app_comment_new') }}" class="create-first-btn">
+                    <i class="bi bi-plus-circle"></i>
+                    Créer un commentaire
+                </a>
+            </div>
+        {% endif %}
 
-    <a href="{{ path('app_comment_new') }}">Create new</a>
+        <!-- Pagination -->
+        {% if comments.getPageCount > 1 %}
+        <div class="pagination-container">
+            {% set startItem = (comments.getCurrentPageNumber - 1) * comments.getItemNumberPerPage + 1 %}
+            {% set endItem = comments.getCurrentPageNumber * comments.getItemNumberPerPage %}
+            {% if endItem > comments.getTotalItemCount %}
+                {% set endItem = comments.getTotalItemCount %}
+            {% endif %}
+            
+            <div class="pagination-info">
+                Affichage de {{ startItem }} à {{ endItem }} 
+                sur {{ comments.getTotalItemCount }} commentaires
+            </div>
+            <div class="pagination-wrapper">
+                {{ knp_pagination_render(comments) }}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animation des cartes au scroll
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }, index * 100);
+                    }
+                });
+            });
+
+            document.querySelectorAll('.comment-card').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(card);
+            });
+        });
+    </script>
 {% endblock %}

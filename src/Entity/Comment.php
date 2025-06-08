@@ -24,7 +24,13 @@ class Comment
     private ?\DateTime $createdAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Article $article = null;
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime();
+    }
+
 
     public function getId(): ?int
     {

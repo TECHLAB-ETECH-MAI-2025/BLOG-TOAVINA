@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Article;
 use App\Entity\Comment;
+use App\Entity\ArticleLike;
 use App\Form\ArticleForm;
 use App\Form\CommentFormType;
 use App\Repository\ArticleRepository;
@@ -14,17 +15,29 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Knp\Component\Pager\PaginatorInterface;
 
-
-
-
 #[Route('/article')]
 final class ArticleController extends AbstractController
 {
     #[Route(name: 'app_article_index', methods: ['GET'])]
-    public function index(ArticleRepository $articleRepository): Response
-    {
+    public function index(
+        ArticleRepository $articleRepository,
+        Request $request,
+        PaginatorInterface $paginator
+    ): Response {
+        // Requête pour récupérer tous les articles
+        $query = $articleRepository->createQueryBuilder('a')
+            ->orderBy('a.id', 'ASC') // Tri par ID croissant
+            ->getQuery();
+
+        // Pagination avec 5 articles par page
+        $articles = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1), // Page actuelle
+            5 // Limite à 5 articles par page
+        );
+
         return $this->render('article/index.html.twig', [
-            'articles' => $articleRepository->findAll(),
+            'articles' => $articles,
         ]);
     }
 
@@ -36,13 +49,13 @@ final class ArticleController extends AbstractController
         PaginatorInterface $paginator
     ): Response {
         $query = $articleRepository->createQueryBuilder('a')
-            ->orderBy('a.createdAt', 'DESC')
+            ->orderBy('a.createdAt', 'ASC') // Tri par date croissante
             ->getQuery();
 
         $articles = $paginator->paginate(
             $query,
             $request->query->getInt('page', 1),
-            5
+            5 // 5 articles par page aussi
         );
 
         $commentForms = [];
@@ -55,8 +68,14 @@ final class ArticleController extends AbstractController
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $em->persist($comment);
-                $em->flush();
+                $comment->setArticle($article);
+                $comment->setCreatedAt(new \DateTime());
+                try {
+                    $em->persist($comment);
+                    $em->flush();
+                } catch (\Exception $e) {
+                    dd($e->getMessage());
+                }
                 return $this->redirectToRoute('app_blog_home');
             }
 
@@ -68,7 +87,6 @@ final class ArticleController extends AbstractController
             'commentForms' => $commentForms,
         ]);
     }
-
 
     #[Route('/new', name: 'app_article_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
@@ -90,16 +108,94 @@ final class ArticleController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_article_show', methods: ['GET'])]
-    public function show(Article $article): Response
-    {
-        $commentForm = [];
+    #[Route('/{id}', name: 'app_article_show', methods: ['GET', 'POST'])]
+    public function show(
+        Article $article,
+        Request $request,
+        EntityManagerInterface $em,
+        ArticleRepository $articleRepository
+    ): Response {
         $comment = new Comment();
         $form = $this->createForm(CommentFormType::class, $comment);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $comment->setArticle($article);
+            try {
+                $em->persist($comment);
+                $em->flush();
+            } catch (\Exception $e) {
+                dd($e->getMessage());
+            }
+
+            return $this->redirectToRoute('app_article_show', ['id' => $article->getId()]);
+        }
+
+        // Récupérer l'article précédent et suivant (ordre croissant)
+        $previousArticle = $articleRepository->createQueryBuilder('a')
+            ->where('a.id < :currentId')
+            ->setParameter('currentId', $article->getId())
+            ->orderBy('a.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        $nextArticle = $articleRepository->createQueryBuilder('a')
+            ->where('a.id > :currentId')
+            ->setParameter('currentId', $article->getId())
+            ->orderBy('a.id', 'ASC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        // Vérifier si l'utilisateur a aimé l'article
+        $userLiked = false;
+        $userIp = $request->getClientIp();
+        foreach ($article->getLikes() as $like) {
+            if ($like->getIpAddress() === $userIp) {
+                $userLiked = true;
+                break;
+            }
+        }
+
         return $this->render('article/show.html.twig', [
             'article' => $article,
-            'commentForm' => $commentForm = $form->createView(),
+            'commentForm' => $form->createView(),
+            'previousArticle' => $previousArticle,
+            'nextArticle' => $nextArticle,
+            'userLiked' => $userLiked,
         ]);
+    }
+
+    #[Route('/{id}/like', name: 'article_like', methods: ['POST'])]
+    public function like(Article $article, Request $request, EntityManagerInterface $em): Response
+    {
+        $ip = $request->getClientIp();
+
+        $existingLike = null;
+        foreach ($article->getLikes() as $like) {
+            if ($like->getIpAddress() === $ip) {
+                $existingLike = $like;
+                break;
+            }
+        }
+
+        if ($existingLike) {
+            $em->remove($existingLike);
+            $em->flush();
+            $this->addFlash('success', 'Vous avez retiré votre like.');
+        } else {
+            $like = new ArticleLike();
+            $like->setIpAddress($ip);
+            $like->setCreatedAt(new \DateTimeImmutable());
+            $like->setArticle($article);
+
+            $em->persist($like);
+            $em->flush();
+            $this->addFlash('success', 'Merci pour votre like !');
+        }
+
+        return $this->redirectToRoute('app_article_show', ['id' => $article->getId()]);
     }
 
     #[Route('/{id}/edit', name: 'app_article_edit', methods: ['GET', 'POST'])]
