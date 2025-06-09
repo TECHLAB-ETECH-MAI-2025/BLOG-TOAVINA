@@ -1,0 +1,168 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Email de réinitialisation envoyé{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1877f2;
+            --light-bg: #f0f2f5;
+            --border-color: #dddfe2;
+            --text-dark: #1c1e21;
+            --text-light: #65676b;
+            --card-bg: #ffffff;
+            --shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            --success-color: #42b883;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 0;
+        }
+        
+        .check-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .check-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        .check-header {
+            padding: 32px 32px 24px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--success-color), #42b883);
+            color: white;
+        }
+        
+        .check-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 32px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .check-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .check-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .check-body {
+            padding: 32px;
+            text-align: center;
+        }
+        
+        .check-message {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+        
+        .expiration-info {
+            background-color: var(--light-bg);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        
+        .check-footer {
+            padding: 24px 32px;
+            background-color: var(--light-bg);
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .footer-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="check-container">
+        <div class="check-card">
+            <!-- Header -->
+            <div class="check-header">
+                <div class="check-icon">
+                    <i class="bi bi-envelope-check"></i>
+                </div>
+                <h1 class="check-title">Email envoyé !</h1>
+                <p class="check-subtitle">Vérifiez votre boîte de réception</p>
+            </div>
+            
+            <!-- Body -->
+            <div class="check-body">
+                <p class="check-message">
+                    Si un compte correspondant à votre email existe, un email contenant un lien de réinitialisation vient d'être envoyé.
+                </p>
+                
+                <div class="expiration-info">
+                    <i class="bi bi-clock"></i>
+                    Ce lien expirera dans {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
+                </div>
+                
+                <p class="check-message">
+                    Si vous ne recevez pas l'email, vérifiez votre dossier spam ou réessayez.
+                </p>
+            </div>
+            
+            <!-- Footer -->
+            <div class="check-footer">
+                <div class="footer-links">
+                    <a href="{{ path('app_forgot_password_request') }}" class="footer-link">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Renvoyer l'email
+                    </a>
+                    <a href="{{ path('app_login') }}" class="footer-link">
+                        <i class="bi bi-arrow-left"></i>
+                        Retour à la connexion
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

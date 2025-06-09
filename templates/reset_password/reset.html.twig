@@ -1,0 +1,175 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Réinitialiser votre mot de passe{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1877f2;
+            --light-bg: #f0f2f5;
+            --border-color: #dddfe2;
+            --text-dark: #1c1e21;
+            --text-light: #65676b;
+            --card-bg: #ffffff;
+            --shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            --success-color: #42b883;
+            --danger-color: #e74c3c;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 0;
+        }
+        
+        .reset-container {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .reset-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        .reset-header {
+            padding: 32px 32px 24px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--success-color), #42b883);
+            color: white;
+        }
+        
+        .reset-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 32px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .reset-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .reset-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .reset-body {
+            padding: 32px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background-color: var(--card-bg);
+            color: var(--text-dark);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .form-control::placeholder {
+            color: var(--text-light);
+        }
+        
+        .btn-reset {
+            width: 100%;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, var(--success-color), #42b883);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-reset:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(66, 184, 131, 0.3);
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="reset-container">
+        <div class="reset-card">
+            <!-- Header -->
+            <div class="reset-header">
+                <div class="reset-icon">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <h1 class="reset-title">Nouveau mot de passe</h1>
+                <p class="reset-subtitle">Choisissez un mot de passe sécurisé</p>
+            </div>
+            
+            <!-- Body -->
+            <div class="reset-body">
+                {{ form_start(resetForm) }}
+                    <div class="form-group">
+                        {{ form_label(resetForm.plainPassword.first, 'Nouveau mot de passe', {'attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(resetForm.plainPassword.first, {'attr': {'class': 'form-control', 'placeholder': 'Minimum 6 caractères'}}) }}
+                        {{ form_errors(resetForm.plainPassword.first) }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form_label(resetForm.plainPassword.second, 'Confirmer le mot de passe', {'attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(resetForm.plainPassword.second, {'attr': {'class': 'form-control', 'placeholder': 'Répétez votre mot de passe'}}) }}
+                        {{ form_errors(resetForm.plainPassword.second) }}
+                    </div>
+
+                    <button type="submit" class="btn-reset">
+                        <i class="bi bi-check-circle"></i>
+                        Réinitialiser le mot de passe
+                    </button>
+                {{ form_end(resetForm) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
