@@ -548,21 +548,6 @@
                         Mot de passe oublié ?
                     </a>
                 </div>
-
-                <!-- Social Login (Optional) -->
-                <div class="social-login">
-                    <div class="social-title">Ou connectez-vous avec</div>
-                    <div class="social-buttons">
-                        <a href="#" class="btn-social btn-google" onclick="showSocialLoginAlert('Google')">
-                            <i class="bi bi-google"></i>
-                            Google
-                        </a>
-                        <a href="#" class="btn-social btn-facebook" onclick="showSocialLoginAlert('Facebook')">
-                            <i class="bi bi-facebook"></i>
-                            Facebook
-                        </a>
-                    </div>
-                </div>
             </div>
             
             <!-- Footer -->
@@ -680,23 +665,5 @@
             }
         }
 
-
-        function showSocialLoginAlert(provider) {
-            alert(`Connexion avec ${provider} à venir prochainement !\n\nUtilisez votre email et mot de passe pour vous connecter.`);
-        }
-
-        // Auto-hide alerts after 5 seconds
-        document.addEventListener('DOMContentLoaded', function() {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                setTimeout(() => {
-                    alert.style.opacity = '0';
-                    alert.style.transform = 'translateY(-10px)';
-                    setTimeout(() => {
-                        alert.remove();
-                    }, 300);
-                }, 5000);
-            });
-        });
     </script>
 {% endblock %}
