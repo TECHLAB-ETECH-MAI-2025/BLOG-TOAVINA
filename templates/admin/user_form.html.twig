@@ -1,0 +1,676 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ user.id ? 'Modifier l\'utilisateur' : 'Nouvel utilisateur' }}{% endblock %}
+
+{% block body %}
+<div class="admin-container">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+        <div class="sidebar-header">
+            <div class="admin-logo">
+                <i class="bi bi-shield-lock"></i>
+            </div>
+            <h3>Administration</h3>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <ul>
+                <li>
+                    <a href="{{ path('app_admin') }}">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>Tableau de bord</span>
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="{{ path('app_admin_users') }}">
+                        <i class="bi bi-people"></i>
+                        <span>Utilisateurs</span>
+                    </a>
+                </li>
+                <li class="sidebar-divider"></li>
+                
+                <li>
+                    <a href="{{ path('app_logout') }}">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>Déconnexion</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+        <!-- Top Bar -->
+        <header class="admin-topbar">
+            <div class="topbar-left">
+                <h1>{{ user.id ? 'Modifier l\'utilisateur' : 'Nouvel utilisateur' }}</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ path('app_admin') }}">Administration</a></li>
+                        <li class="breadcrumb-item"><a href="{{ path('app_admin_users') }}">Utilisateurs</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ user.id ? 'Modifier' : 'Nouveau' }}</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="topbar-right">
+                <a href="{{ path('app_admin_users') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Retour à la liste
+                </a>
+            </div>
+        </header>
+
+        <!-- Flash Messages -->
+        <div class="admin-flash-messages">
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+        <!-- User Form -->
+        <div class="admin-panel">
+            <div class="admin-panel-header">
+                <h2>
+                    <i class="bi bi-{{ user.id ? 'pencil-square' : 'person-plus' }}"></i> 
+                    {{ user.id ? 'Modifier les informations' : 'Créer un utilisateur' }}
+                </h2>
+            </div>
+            <div class="admin-panel-body">
+                {{ form_start(form, {'attr': {'class': 'user-form'}}) }}
+                    <div class="form-sections">
+                        <!-- Personal Information -->
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h3><i class="bi bi-person"></i> Informations personnelles</h3>
+                            </div>
+                            <div class="form-section-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-group">
+                                            {{ form_label(form.firstName, null, {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.firstName) }}
+                                            {% if form_errors(form.firstName) %}
+                                                <div class="form-error">
+                                                    {{ form_errors(form.firstName) }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-group">
+                                            {{ form_label(form.lastName, null, {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.lastName) }}
+                                            {% if form_errors(form.lastName) %}
+                                                <div class="form-error">
+                                                    {{ form_errors(form.lastName) }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-3">
+                                    {{ form_label(form.email, null, {'label_attr': {'class': 'form-label'}}) }}
+                                    {{ form_widget(form.email) }}
+                                    {% if form_errors(form.email) %}
+                                        <div class="form-error">
+                                            {{ form_errors(form.email) }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Security -->
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h3><i class="bi bi-shield-lock"></i> Sécurité</h3>
+                            </div>
+                            <div class="form-section-body">
+                                <div class="form-group mb-3">
+                                    {{ form_label(form.plainPassword, null, {'label_attr': {'class': 'form-label'}}) }}
+                                    <div class="input-group">
+                                        {{ form_widget(form.plainPassword) }}
+                                        <button class="btn btn-outline-secondary toggle-password" type="button">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+                                    {% if form_errors(form.plainPassword) %}
+                                        <div class="form-error">
+                                            {{ form_errors(form.plainPassword) }}
+                                        </div>
+                                    {% endif %}
+                                    <div class="form-text">
+                                        {% if not user.id %}
+                                            <i class="bi bi-info-circle"></i> Le mot de passe doit contenir au moins 8 caractères.
+                                        {% else %}
+                                            <i class="bi bi-info-circle"></i> Laissez vide pour conserver le mot de passe actuel.
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                       <!-- Permissions -->
+<!-- Permissions -->
+<div class="form-section">
+    <div class="form-section-header">
+        <h3><i class="bi bi-key"></i> Permissions et statut</h3>
+    </div>
+    <div class="form-section-body">
+
+        <!-- Affichage custom des rôles -->
+        <div class="form-group mb-3">
+            {{ form_label(form.roles, null, {'label_attr': {'class': 'form-label'}}) }}
+            <div>
+                {% for choice in form.roles %}
+                    <div class="form-check">
+                        {{ form_widget(choice, {'attr': {'class': 'form-check-input'}}) }}
+                        {{ form_label(choice, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                    </div>
+                {% endfor %}
+            </div>
+            {% if form_errors(form.roles) %}
+                <div class="form-error">
+                    {{ form_errors(form.roles) }}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Switch Email vérifié -->
+        <div class="d-flex align-items-center gap-2 mt-3">
+            {{ form_widget(form.isVerified, {
+                'attr': {
+                    'class': 'form-check-input',
+                    'role': 'switch'
+                }
+            }) }}
+            <label class="mb-0">Email vérifié</label>
+        </div>
+
+        {% if form_errors(form.isVerified) %}
+            <div class="text-danger mt-1">
+                {{ form_errors(form.isVerified) }}
+            </div>
+        {% endif %}
+
+
+    </div>
+</div>
+
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="{{ path('app_admin_users') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x"></i> Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check2"></i> {{ user.id ? 'Mettre à jour' : 'Créer l\'utilisateur' }}
+                        </button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    /* Base Layout */
+    .admin-container {
+        display: flex;
+        min-height: 100vh;
+        background-color: #f5f7fa;
+    }
+    
+    /* Sidebar */
+    .admin-sidebar {
+        width: 260px;
+        background-color: #2c3e50;
+        color: #ecf0f1;
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto;
+        z-index: 100;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .sidebar-header {
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .admin-logo {
+        width: 40px;
+        height: 40px;
+        background-color: #3498db;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        font-size: 1.5rem;
+    }
+    
+    .sidebar-header h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+    
+    .sidebar-nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .sidebar-nav li {
+        margin: 5px 0;
+    }
+    
+    .sidebar-nav li a {
+        display: flex;
+        align-items: center;
+        padding: 12px 20px;
+        color: #b8c7ce;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+    
+    .sidebar-nav li a:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+    
+    .sidebar-nav li.active a {
+        background-color: #3498db;
+        color: #fff;
+        border-left: 4px solid #2980b9;
+    }
+    
+    .sidebar-nav li i {
+        margin-right: 10px;
+        font-size: 1.1rem;
+    }
+    
+    .sidebar-divider {
+        height: 1px;
+        background-color: rgba(255, 255, 255, 0.1);
+        margin: 15px 0;
+    }
+    
+    /* Main Content */
+    .admin-main {
+        flex: 1;
+        margin-left: 260px;
+        padding: 20px;
+    }
+    
+    /* Top Bar */
+    .admin-topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e1e5eb;
+    }
+    
+    .topbar-left h1 {
+        margin: 0;
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+    
+    .breadcrumb {
+        margin-bottom: 0;
+        padding: 0;
+        background: none;
+    }
+    
+    /* Flash Messages */
+    .admin-flash-messages {
+        margin-bottom: 20px;
+    }
+    
+    /* Admin Panel */
+    .admin-panel {
+        background-color: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        margin-bottom: 30px;
+    }
+    
+    .admin-panel-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid #e9ecef;
+        background-color: #f8f9fa;
+    }
+    
+    .admin-panel-header h2 {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2c3e50;
+        display: flex;
+        align-items: center;
+    }
+    
+    .admin-panel-header h2 i {
+        margin-right: 10px;
+        color: #3498db;
+    }
+    
+    .admin-panel-body {
+        padding: 20px;
+    }
+    
+    /* Form Sections */
+    .form-sections {
+        margin-bottom: 30px;
+    }
+    
+    .form-section {
+        margin-bottom: 30px;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .form-section-header {
+        padding: 15px 20px;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .form-section-header h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2c3e50;
+        display: flex;
+        align-items: center;
+    }
+    
+    .form-section-header h3 i {
+        margin-right: 10px;
+        color: #3498db;
+    }
+    
+    .form-section-body {
+        padding: 20px;
+    }
+    
+    /* Form Elements */
+    .form-group label {
+        font-weight: 500;
+        color: #2c3e50;
+        margin-bottom: 5px;
+    }
+    
+    .form-control {
+        border: 1px solid #e1e5eb;
+        border-radius: 4px;
+        padding: 10px 15px;
+        height: auto;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+    
+    .form-control:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+    
+    .form-error {
+        color: #e74c3c;
+        font-size: 0.85rem;
+        margin-top: 5px;
+    }
+    
+    .form-text {
+        color: #7f8c8d;
+        font-size: 0.85rem;
+        margin-top: 5px;
+    }
+    
+    .form-text i {
+        margin-right: 5px;
+    }
+    
+    /* Roles Container */
+    .roles-container {
+        border: 1px solid #e1e5eb;
+        border-radius: 4px;
+        padding: 15px;
+        background-color: #f8f9fa;
+    }
+    
+    .roles-container .form-check {
+        margin-bottom: 10px;
+    }
+    
+    .roles-container .form-check:last-child {
+        margin-bottom: 0;
+    }
+    
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+    
+    /* Buttons */
+    .btn-primary {
+        background-color: #3498db;
+        border-color: #3498db;
+    }
+    
+    .btn-primary:hover {
+        background-color: #2980b9;
+        border-color: #2980b9;
+    }
+    
+    .btn-outline-secondary {
+        color: #7f8c8d;
+        border-color: #bdc3c7;
+    }
+    
+    .btn-outline-secondary:hover {
+        background-color: #ecf0f1;
+        color: #2c3e50;
+        border-color: #bdc3c7;
+    }
+    
+    /* Toggle Password */
+    .toggle-password {
+        cursor: pointer;
+    }
+    
+    /* Responsive */
+    @media (max-width: 992px) {
+        .admin-sidebar {
+            width: 70px;
+            overflow: visible;
+        }
+        
+        .sidebar-header h3,
+        .sidebar-nav li a span {
+            display: none;
+        }
+        
+        .admin-logo {
+            margin-right: 0;
+        }
+        
+        .sidebar-nav li a {
+            justify-content: center;
+            padding: 15px;
+        }
+        
+        .sidebar-nav li a i {
+            margin-right: 0;
+            font-size: 1.3rem;
+        }
+        
+        .admin-main {
+            margin-left: 70px;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .admin-topbar {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .topbar-right {
+            margin-top: 15px;
+            align-self: flex-end;
+        }
+        
+        .form-actions {
+            flex-direction: column;
+        }
+        
+        .form-actions .btn {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+    }
+
+    /* Fix checkbox styling */
+.roles-container {
+    border: 1px solid #e1e5eb;
+    border-radius: 4px;
+    padding: 0;
+    background-color: white;
+}
+
+.roles-container .form-check {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+    padding: 12px 15px;
+    border-bottom: 1px solid #f1f3f4;
+    transition: background-color 0.2s;
+}
+
+.roles-container .form-check:last-child {
+    border-bottom: none;
+}
+
+.roles-container .form-check:hover {
+    background-color: #f8f9fa;
+}
+
+.roles-container .form-check-input {
+    margin-right: 12px;
+    margin-top: 0;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #3498db;
+    border-radius: 3px;
+    background-color: white;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.roles-container .form-check-input:checked {
+    background-color: #3498db;
+    border-color: #3498db;
+}
+
+.roles-container .form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+.roles-container .form-check-label {
+    margin-bottom: 0;
+    font-weight: 500;
+    color: #2c3e50;
+    cursor: pointer;
+    flex: 1;
+    line-height: 1.4;
+}
+
+/* Switch styling for isVerified */
+.form-check.form-switch {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    background-color: white;
+    border: 1px solid #e1e5eb;
+    border-radius: 4px;
+    margin-bottom: 0;
+    transition: background-color 0.2s;
+}
+
+.form-check.form-switch:hover {
+    background-color: #f8f9fa;
+}
+
+.form-check.form-switch .form-check-input {
+    margin-right: 12px;
+    margin-top: 0;
+    width: 48px;
+    height: 24px;
+    background-color: #e9ecef;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    flex-shrink: 0;
+    background-image: none;
+}
+
+.form-check.form-switch .form-check-input:checked {
+    background-color: #3498db;
+}
+
+.form-check.form-switch .form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+.form-check.form-switch .form-check-label {
+    margin-bottom: 0;
+    font-weight: 500;
+    color: #2c3e50;
+    cursor: pointer;
+    line-height: 1.4;
+}
+</style>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle password visibility
+    const togglePasswordBtn = document.querySelector('.toggle-password');
+    if (togglePasswordBtn) {
+        togglePasswordBtn.addEventListener('click', function() {
+            const passwordInput = document.getElementById('form_plainPassword');
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.replace('bi-eye', 'bi-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.replace('bi-eye-slash', 'bi-eye');
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
