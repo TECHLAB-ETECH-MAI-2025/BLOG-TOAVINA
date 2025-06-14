@@ -69,6 +69,7 @@ final class ArticleController extends AbstractController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 $comment->setArticle($article);
+                $comment->setAuthor($this->getUser() ? $this->getUser()->getUserIdentifier() : 'Anonyme');
                 $comment->setCreatedAt(new \DateTime());
                 try {
                     $em->persist($comment);
@@ -121,6 +122,7 @@ final class ArticleController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $comment->setArticle($article);
+            $comment->setAuthor($this->getUser() ? $this->getUser()->getUserIdentifier() : 'Anonyme');
             try {
                 $em->persist($comment);
                 $em->flush();

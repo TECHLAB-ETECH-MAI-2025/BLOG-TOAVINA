@@ -588,7 +588,6 @@
                     Ajouter un commentaire
                 </div>
                 {{ form_start(commentForm) }}
-                    {{ form_widget(commentForm.author, {'attr': {'class': 'form-control', 'placeholder': 'Votre nom'}}) }}
                     {{ form_widget(commentForm.content, {'attr': {'class': 'form-control', 'placeholder': 'Votre commentaire...', 'rows': 4}}) }}
                     <button type="submit" class="btn-comment">
                         <i class="bi bi-send"></i>
